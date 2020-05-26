@@ -85,6 +85,22 @@ object Settings {
         return PrefsUtil.getInstance(context).getValue(getXPubKey(xPub), 0)
     }
 
+    fun setSettlementAddress(context: Context, settlementAddress: String) {
+        PrefsUtil.getInstance(context).setValue(PrefsUtil.MERCHANT_KEY_SETTLEMENT_ADDRESS, settlementAddress)
+    }
+
+    fun getSettlementAddress(context: Context): String {
+        return PrefsUtil.getInstance(context).getValue(PrefsUtil.MERCHANT_KEY_SETTLEMENT_ADDRESS, "")
+    }
+
+    fun setSettlementCoin(context: Context, settlementCoin: String) {
+        PrefsUtil.getInstance(context).setValue(PrefsUtil.MERCHANT_KEY_SETTLEMENT_COIN, settlementCoin)
+    }
+
+    fun getSettlementCoin(context: Context): String {
+        return PrefsUtil.getInstance(context).getValue(PrefsUtil.MERCHANT_KEY_SETTLEMENT_COIN, "")
+    }
+
     private fun getXPubKey(xPub: String) = PrefsUtil.MERCHANT_KEY_XPUB_INDEX + "_" + xPub
 
     private class PrefsUtil private constructor() {
@@ -97,6 +113,8 @@ object Settings {
             const val MERCHANT_KEY_MERCHANT_RECEIVER = "receiving_address"
             const val MERCHANT_KEY_XPUB_INDEX = "xpub_index"
             const val MERCHANT_KEY_PERSIST_INVOICE = "persist_invoice"
+            const val MERCHANT_KEY_SETTLEMENT_ADDRESS = "settlement_address"
+            const val MERCHANT_KEY_SETTLEMENT_COIN = "settlement_currency"
             private lateinit var context: Context
             private lateinit var instance: PrefsUtil
             fun getInstance(ctx: Context): PrefsUtil {

@@ -11,7 +11,7 @@
         app:popExitAnim="@anim/drop_down_out"/>
     <action
         android:id="@+id/nav_to_settings_screen"
-        app:destination="@id/pin_code_screen"
+        app:destination="@id/settings_screen"
         app:enterAnim="@anim/drop_down"
         app:popExitAnim="@anim/drop_down_out"/>
     <action
@@ -65,6 +65,12 @@
         tools:layout="@layout/fragment_transaction">
         <!-- Only BACK action allowed -->
     </fragment>
+    <action
+        android:id="@+id/nav_to_settlement_screen"
+        app:destination="@id/settlement"
+        app:enterAnim="@anim/slide_in_from_left"
+        app:popExitAnim="@anim/slide_out_from_right"/>
+    />
     <fragment
         android:id="@+id/pin_code_screen"
         android:name="com.bitcoin.merchant.app.screens.PinCodeFragment"
@@ -107,13 +113,20 @@
         <!-- Only BACK action allowed -->
     </fragment>
     <fragment
+        android:id="@+id/settlement"
+        android:name="com.bitcoin.merchant.app.screens.SettlementFragment"
+        android:label="Settlement"
+        tools:layout="@layout/fragment_settlement">
+        <!-- Only BACK action allowed -->
+    </fragment>
+    <fragment
         android:id="@+id/settings_screen"
         android:name="com.bitcoin.merchant.app.screens.SettingsFragment"
         android:label="Settings"
         tools:layout="@layout/fragment_settings">
         <action
             android:id="@+id/nav_to_pin_code_screen"
-            app:destination="@id/pin_code_screen"
+            app:destination="@id/pin"
             app:enterAnim="@anim/slide_in_from_left"
             app:popExitAnim="@anim/slide_out_from_right"/>
     </fragment>

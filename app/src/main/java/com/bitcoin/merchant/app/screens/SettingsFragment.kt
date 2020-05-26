@@ -33,6 +33,7 @@ class SettingsFragment : ToolbarAwareFragment() {
     private lateinit var lvMerchantName: LinearLayout
     private lateinit var lvPaymentAddress: LinearLayout
     private lateinit var lvLocalCurrency: LinearLayout
+    private lateinit var lvSettlementSettings: LinearLayout
     private lateinit var lvPinCode: LinearLayout
     private lateinit var btnWallet: RelativeLayout
     private lateinit var btnLocalBitcoin: RelativeLayout
@@ -54,6 +55,7 @@ class SettingsFragment : ToolbarAwareFragment() {
         lvMerchantName = rootView.findViewById(R.id.lv_merchant_name)
         lvPaymentAddress = rootView.findViewById(R.id.lv_payment_address)
         lvLocalCurrency = rootView.findViewById(R.id.lv_fiat_currency)
+        lvSettlementSettings = rootView.findViewById(R.id.lv_sideshift)
         lvPinCode = rootView.findViewById(R.id.lv_pin_code)
         btnWallet = rootView.findViewById(R.id.wallet_ad)
         btnLocalBitcoin = rootView.findViewById(R.id.localbch_ad)
@@ -62,6 +64,7 @@ class SettingsFragment : ToolbarAwareFragment() {
         addOptionCurrency()
         addOptionAddress()
         addOptionPin()
+        addOptionSettlement()
         btnWallet.setOnClickListener {
             Analytics.tap_link_wallet.send()
             openUrl(activity.getString(R.string.url_wallet_bitcoin_com))
@@ -133,6 +136,12 @@ class SettingsFragment : ToolbarAwareFragment() {
         val args = Bundle()
         args.putBoolean(PinCodeFragment.EXTRA_DO_CREATE, true)
         nav.navigate(R.id.nav_to_pin_code_screen, args)
+    }
+
+    private fun addOptionSettlement() {
+        lvSettlementSettings.setOnClickListener {
+            nav.navigate(R.id.nav_to_settlement_screen)
+        }
     }
 
     fun setCurrencySummary(countryCurrency: CountryCurrencyLocale) {
