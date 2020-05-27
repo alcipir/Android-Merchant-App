@@ -1,8 +1,8 @@
 package com.bitcoin.merchant.app.screens
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +11,7 @@ import android.widget.Spinner
 import android.widget.Switch
 import com.bitcoin.merchant.app.R
 import com.bitcoin.merchant.app.screens.features.ToolbarAwareFragment
+import com.bitcoin.merchant.app.util.Settings
 import com.google.android.material.textfield.TextInputEditText
 
 
@@ -37,6 +38,19 @@ class SettlementFragment : ToolbarAwareFragment() {
                 addressInput.isEnabled = isChecked
                 settlementSpinner.isEnabled = isChecked
         }
+
+        addressInput.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                Settings.setSettlementAddress(requireContext(), (p0.toString()))
+                Settings.setSettlementCoin(requireContext(), "USDH")
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+        })
         return rootView;
     }
 

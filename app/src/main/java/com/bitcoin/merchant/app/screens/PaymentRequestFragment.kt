@@ -27,7 +27,10 @@ import com.bitcoin.merchant.app.R
 import com.bitcoin.merchant.app.currency.CurrencyExchange
 import com.bitcoin.merchant.app.model.Analytics
 import com.bitcoin.merchant.app.model.PaymentTarget
+import com.bitcoin.merchant.app.model.sideshift.OrderRequest
+import com.bitcoin.merchant.app.model.sideshift.OrderResponse
 import com.bitcoin.merchant.app.network.ExpectedPayments
+import com.bitcoin.merchant.app.network.SideshiftService
 import com.bitcoin.merchant.app.screens.dialogs.DialogHelper
 import com.bitcoin.merchant.app.screens.dialogs.SnackHelper
 import com.bitcoin.merchant.app.screens.features.ToolbarAwareFragment
@@ -66,6 +69,7 @@ class PaymentRequestFragment : ToolbarAwareFragment() {
     private lateinit var ivDone: Button
     private lateinit var bip70Manager: Bip70Manager
     private lateinit var bip70PayService: Bip70PayService
+    private lateinit var sideshiftService: SideshiftService
     private var lastProcessedInvoicePaymentId: String? = null
     private var qrCodeUri: String? = null
     private var bip21Address: String? = null
@@ -153,6 +157,7 @@ class PaymentRequestFragment : ToolbarAwareFragment() {
         setToolbarVisible(false)
         registerReceiver()
         bip70PayService = Bip70PayService.create(resources.getString(R.string.bip70_bitcoin_com_host))
+        sideshiftService = SideshiftService.create("https://sideshift.ai/api/")
         bip70Manager = Bip70Manager(app)
         val args = arguments
         val amountFiat = args?.getDouble(PaymentInputFragment.AMOUNT_PAYABLE_FIAT, 0.0) ?: 0.0
@@ -186,6 +191,13 @@ class PaymentRequestFragment : ToolbarAwareFragment() {
     private fun createNewInvoice(invoiceRequest: InvoiceRequest) {
         viewLifecycleOwner.lifecycleScope.launch {
             setWorkInProgress(true)
+            val settlementAddress = Settings.getSettlementAddress((activity))
+            val settlementCoin = Settings.getSettlementCoin((activity))
+            if (settlementAddress.isNotEmpty()) {
+                val orderRequest: OrderRequest = OrderRequest(settlementCoin.toLowerCase(), settlementAddress)
+                val orderResponse: OrderResponse? = getOrderFromSideshift(orderRequest)
+                invoiceRequest.address = orderResponse?.depositAddress?.address
+            }
             val invoiceStatus = downloadInvoice(invoiceRequest) { createNewInvoice(invoiceRequest)}?.let { invoice ->
                 generateQrCode(invoice)?.also {
                     showQrCodeAndAmountFields(invoice, it)
@@ -319,6 +331,7 @@ class PaymentRequestFragment : ToolbarAwareFragment() {
                 // then addresses can be reused. Address reuse is not an issue
                 // because the BIP-70 server is the one only broadcasting the TX to that address
                 // and thus it is aware of which invoice is being paid without possible confusion
+
                 i.address = app.wallet.getAddressFromXPubAndMoveToNext()
                 Log.i(TAG, "BCH-address(xPub) to receive: " + i.address)
             } catch (e: Exception) {
@@ -328,6 +341,18 @@ class PaymentRequestFragment : ToolbarAwareFragment() {
             }
         }
         return i
+    }
+    private suspend fun getOrderFromSideshift(request: OrderRequest): OrderResponse? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val startMs = System.currentTimeMillis();
+                val response: Response<OrderResponse?> = sideshiftService.createOrder(request).execute()
+                val order = response.body() ?: throw Exception("HTTP status:" + response.code() + " message:" + response.message())
+                return@withContext order
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
 
     private suspend fun downloadInvoice(request: InvoiceRequest, retry: () -> Unit): InvoiceStatus? {

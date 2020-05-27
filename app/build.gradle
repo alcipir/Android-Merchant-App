@@ -79,7 +79,9 @@ dependencies {
     implementation 'org.slf4j:slf4j-android:1.7.29'
     implementation 'com.github.pokkst:bitcoincashj:0.17.5.2'
     implementation "com.amplitude:android-sdk:2.24.2"
-
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    implementation'com.squareup.okhttp3:logging-interceptor:3.8.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

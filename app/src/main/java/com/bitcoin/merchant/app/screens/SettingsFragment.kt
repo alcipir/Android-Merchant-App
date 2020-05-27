@@ -135,7 +135,7 @@ class SettingsFragment : ToolbarAwareFragment() {
     private fun changePin() {
         val args = Bundle()
         args.putBoolean(PinCodeFragment.EXTRA_DO_CREATE, true)
-        nav.navigate(R.id.nav_to_pin_code_screen, args)
+        nav.navigate(R.id.pin_code_screen, args)
     }
 
     private fun addOptionSettlement() {
